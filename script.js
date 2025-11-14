@@ -3,6 +3,13 @@ let score = 0;
 let timeLeft = 30;
 let timerInterval;
 
+const answerInput = document.getElementById("answer");
+const feedback = document.getElementById("feedback");
+const scoreDisplay = document.getElementById("score");
+const restartBtn = document.getElementById("restart");
+const correctSound = document.getElementById("correctSound");
+const wrongSound = document.getElementById("wrongSound");
+
 function generateNumber(level) {
     if (level === "easy") return Math.floor(Math.random() * 10) + 1;
     if (level === "medium") return Math.floor(Math.random() * 20) + 1;
@@ -11,7 +18,7 @@ function generateNumber(level) {
 
 function startTimer() {
     clearInterval(timerInterval);
-    timeLeft = 10;
+    timeLeft = 30;
     document.getElementById("timer").innerHTML = "Time: " + timeLeft;
 
     timerInterval = setInterval(() => {
@@ -20,7 +27,7 @@ function startTimer() {
 
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
-            document.getElementById("feedback").innerHTML = "⏳ Time's up!";
+            feedback.innerHTML = "⏳ Time's up!";
             generateQuestion();
         }
     }, 1000);
@@ -39,38 +46,44 @@ function generateQuestion() {
     if (operator === "-") correctAnswer = num1 - num2;
     if (operator === "×") correctAnswer = num1 * num2;
 
-    document.getElementById("question").innerHTML =
-        `${num1} ${operator} ${num2} = ?`;
+    document.getElementById("question").innerHTML = `${num1} ${operator} ${num2} = ?`;
 
-    document.getElementById("answer").value = "";
-    document.getElementById("feedback").innerHTML = "";
+    answerInput.value = "";
+    feedback.innerHTML = "";
 
     startTimer();
 }
 
 function checkAnswer() {
-    let userAns = Number(document.getElementById("answer").value);
+    let userAns = Number(answerInput.value);
 
     if (userAns === correctAnswer) {
-        document.getElementById("feedback").innerHTML = "✅ Correct!";
+        feedback.innerHTML = "✅ Correct!";
         score++;
-        document.getElementById("correctSound").play();
+        correctSound.play();
     } else {
-        document.getElementById("feedback").innerHTML =
-            `❌ Wrong! Correct answer: ${correctAnswer}`;
-        document.getElementById("wrongSound").play();
+        feedback.innerHTML = `❌ Wrong! Correct answer: ${correctAnswer}`;
+        wrongSound.play();
     }
 
-    document.getElementById("score").innerHTML = "Score: " + score;
+    scoreDisplay.innerHTML = "Score: " + score;
     generateQuestion();
 }
 
-function restartGame() {
+// Enter key submits answer
+answerInput.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        checkAnswer();
+    }
+});
+
+// Restart button
+restartBtn.addEventListener("click", function() {
     clearInterval(timerInterval);
     score = 0;
-    document.getElementById("score").innerHTML = "Score: 0";
+    scoreDisplay.innerHTML = "Score: 0";
     generateQuestion();
-}
+});
 
-// Start first question when page loads
+// Start the first question
 generateQuestion();
