@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Math Game</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            width: 350px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+        }
+
+        #question {
+            font-size: 28px;
+            margin: 20px 0;
+        }
+
+        input {
+            padding: 10px;
+            width: 120px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            border: none;
+            background: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        #feedback {
+            margin-top: 15px;
+            font-size: 20px;
+        }
+
+        #score {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        #restart {
+            margin-top: 10px;
+            background: #007bff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Math Quiz Game</h2>
+
+    <div id="question">Loading...</div>
+
+    <input type="number" id="answer" placeholder="Your answer">
+
+    <button onclick="checkAnswer()">Submit</button>
+
+    <div id="feedback"></div>
+
+    <div id="score">Score: 0</div>
+
+    <button id="restart" onclick="restartGame()">Restart</button>
+</div>
+
+<script>
+    let num1, num2, correctAnswer;
+    let score = 0;
+
+    function generateQuestion() {
+        num1 = Math.floor(Math.random() * 10) + 1;
+        num2 = Math.floor(Math.random() * 10) + 1;
+
+        let operators = ["+", "-", "×"];
+        let operator = operators[Math.floor(Math.random() * operators.length)];
+
+        if (operator === "+") correctAnswer = num1 + num2;
+        if (operator === "-") correctAnswer = num1 - num2;
+        if (operator === "×") correctAnswer = num1 * num2;
+
+        document.getElementById("question").innerHTML =
+            `${num1} ${operator} ${num2} = ?`;
+
+        document.getElementById("answer").value = "";
+        document.getElementById("feedback").innerHTML = "";
+    }
+
+    function checkAnswer() {
+        let userAns = Number(document.getElementById("answer").value);
+
+        if (userAns === correctAnswer) {
+            document.getElementById("feedback").innerHTML = "✅ Correct!";
+            score++;
+        } else {
+            document.getElementById("feedback").innerHTML =
+                `❌ Wrong! Correct answer: ${correctAnswer}`;
+        }
+
+        document.getElementById("score").innerHTML = `Score: ${score}`;
+        generateQuestion();
+    }
+
+    function restartGame() {
+        score = 0;
+        document.getElementById("score").innerHTML = "Score: 0";
+        generateQuestion();
+    }
+
+    // Start game
+    generateQuestion();
+</script>
+
+</body>
+</html>
