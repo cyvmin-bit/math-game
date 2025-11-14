@@ -1,82 +1,88 @@
-body {
-    font-family: "Poppins", Arial, sans-serif;
-    background: #eef0f4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+let num1, num2, operator, correctAnswer;
+let score = 0;
+let timeLeft = 30; // Changed from 10 to 30
+let timerInterval;
+
+const answerInput = document.getElementById("answer");
+const feedback = document.getElementById("feedback");
+const scoreDisplay = document.getElementById("score");
+const restartBtn = document.getElementById("restart");
+const correctSound = document.getElementById("correctSound");
+const wrongSound = document.getElementById("wrongSound");
+
+function generateNumber(level) {
+    if (level === "easy") return Math.floor(Math.random() * 10) + 1;
+    if (level === "medium") return Math.floor(Math.random() * 20) + 1;
+    return Math.floor(Math.random() * 50) + 1;
 }
 
-.container {
-    background: white;
-    padding: 30px;
-    width: 420px;
-    border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-    text-align: center;
+function startTimer() {
+    clearInterval(timerInterval);
+    timeLeft = 30; // Reset timer to 30 seconds
+    document.getElementById("timer").innerHTML = "Time: " + timeLeft;
+
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timer").innerHTML = "Time: " + timeLeft;
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            feedback.innerHTML = "⏳ Time's up!";
+            generateQuestion();
+        }
+    }, 1000);
 }
 
-h2 {
-    margin-bottom: 10px;
-    font-size: 28px;
+function generateQuestion() {
+    const level = document.getElementById("level").value;
+
+    num1 = generateNumber(level);
+    num2 = generateNumber(level);
+
+    let operators = ["+", "-", "×"];
+    operator = operators[Math.floor(Math.random() * operators.length)];
+
+    if (operator === "+") correctAnswer = num1 + num2;
+    if (operator === "-") correctAnswer = num1 - num2;
+    if (operator === "×") correctAnswer = num1 * num2;
+
+    document.getElementById("question").innerHTML = `${num1} ${operator} ${num2} = ?`;
+
+    answerInput.value = "";
+    feedback.innerHTML = "";
+
+    startTimer();
 }
 
-#question {
-    font-size: 32px;
-    margin: 20px 0;
-    font-weight: bold;
+function checkAnswer() {
+    let userAns = Number(answerInput.value);
+
+    if (userAns === correctAnswer) {
+        feedback.innerHTML = "✅ Correct!";
+        score++;
+        correctSound.play();
+    } else {
+        feedback.innerHTML = `❌ Wrong! Correct answer: ${correctAnswer}`;
+        wrongSound.play();
+    }
+
+    scoreDisplay.innerHTML = "Score: " + score;
+    generateQuestion();
 }
 
-/* Remove number input arrows */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-input[type=number] {
-    -moz-appearance: textfield; /* Firefox */
-}
+// Trigger checkAnswer() when Enter is pressed
+answerInput.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        checkAnswer();
+    }
+});
 
-input {
-    padding: 12px;
-    width: 150px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 18px;
-    text-align: center;
-}
+// Restart game
+restartBtn.addEventListener("click", function() {
+    clearInterval(timerInterval);
+    score = 0;
+    scoreDisplay.innerHTML = "Score: 0";
+    generateQuestion();
+});
 
-button {
-    padding: 12px 20px;
-    border: none;
-    background: #007bff;
-    color: white;
-    font-size: 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 15px;
-}
-
-button:hover {
-    background: #0069d9;
-}
-
-#timer {
-    font-size: 20px;
-    margin-top: 10px;
-    color: #ff3b30;
-    font-weight: bold;
-}
-
-select {
-    padding: 10px;
-    border-radius: 6px;
-    font-size: 16px;
-    margin-bottom: 10px;
-}
-
-#feedback {
-    margin-top: 15px;
-    font-size: 22px;
-    font-weight: bold;
-}
+generateQuestion();
