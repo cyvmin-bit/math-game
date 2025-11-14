@@ -1,106 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Math Game</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Math Game</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f2f2f2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .container {
-            background: white;
-            padding: 25px;
-            width: 350px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        h2 {
-            margin-bottom: 10px;
-        }
-
-        #question {
-            font-size: 28px;
-            margin: 20px 0;
-        }
-
-        input {
-            padding: 10px;
-            width: 120px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            font-size: 18px;
-            text-align: center;
-        }
-
-        button {
-            margin-top: 15px;
-            padding: 10px 20px;
-            border: none;
-            background: #4CAF50;
-            color: white;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #45a049;
-        }
-
-        #feedback {
-            margin-top: 15px;
-            font-size: 20px;
-        }
-
-        #score {
-            margin-top: 20px;
-            font-weight: bold;
-        }
-
-        #restart {
-            margin-top: 10px;
-            background: #007bff;
-        }
-    </style>
+<style>
+    body {
+        font-family: "Poppins", Arial, sans-serif;
+        background: #eef0f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    .container {
+        background: white;
+        padding: 30px;
+        width: 420px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        text-align: center;
+    }
+    h2 {
+        margin-bottom: 10px;
+        font-size: 28px;
+    }
+    #question {
+        font-size: 32px;
+        margin: 20px 0;
+        font-weight: bold;
+    }
+    input {
+        padding: 12px;
+        width: 150px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 18px;
+        text-align: center;
+    }
+    button {
+        padding: 12px 20px;
+        border: none;
+        background: #28a745;
+        color: white;
+        font-size: 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-left: 6px;
+    }
+    button:hover {
+        background: #218838;
+    }
+    #restart {
+        margin-top: 15px;
+        background: #007bff;
+    }
+    #restart:hover {
+        background: #0069d9;
+    }
+    #timer {
+        font-size: 20px;
+        margin-top: 10px;
+        color: #ff3b30;
+        font-weight: bold;
+    }
+    select {
+        padding: 10px;
+        border-radius: 6px;
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+    #feedback {
+        margin-top: 15px;
+        font-size: 22px;
+        font-weight: bold;
+    }
+</style>
 </head>
 <body>
 
 <div class="container">
     <h2>Math Quiz Game</h2>
 
+    <div>
+        <label>Select Level:</label>
+        <select id="level">
+            <option value="easy">Easy (1–10)</option>
+            <option value="medium">Medium (1–20)</option>
+            <option value="hard">Hard (1–50)</option>
+        </select>
+    </div>
+
+    <div id="timer">Time: 10</div>
     <div id="question">Loading...</div>
 
-    <input type="number" id="answer" placeholder="Your answer">
-
+    <input type="number" id="answer" placeholder="Enter answer" />
     <button onclick="checkAnswer()">Submit</button>
 
     <div id="feedback"></div>
-
     <div id="score">Score: 0</div>
 
     <button id="restart" onclick="restartGame()">Restart</button>
 </div>
 
+<!-- Sound Effects -->
+<audio id="correctSound" src="https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3"></audio>
+<audio id="wrongSound" src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3"></audio>
+
 <script>
-    let num1, num2, correctAnswer;
+    let num1, num2, operator, correctAnswer;
     let score = 0;
+    let timeLeft = 10;
+    let timerInterval;
+
+    function generateNumber(level) {
+        if (level === "easy") return Math.floor(Math.random() * 10) + 1;
+        if (level === "medium") return Math.floor(Math.random() * 20) + 1;
+        return Math.floor(Math.random() * 50) + 1;
+    }
+
+    function startTimer() {
+        clearInterval(timerInterval);
+        timeLeft = 10;
+        document.getElementById("timer").innerHTML = "Time: " + timeLeft;
+
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            document.getElementById("timer").innerHTML = "Time: " + timeLeft;
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById("feedback").innerHTML = "⏳ Time's up!";
+                generateQuestion();
+            }
+        }, 1000);
+    }
 
     function generateQuestion() {
-        num1 = Math.floor(Math.random() * 10) + 1;
-        num2 = Math.floor(Math.random() * 10) + 1;
+        const level = document.getElementById("level").value;
+
+        num1 = generateNumber(level);
+        num2 = generateNumber(level);
 
         let operators = ["+", "-", "×"];
-        let operator = operators[Math.floor(Math.random() * operators.length)];
+        operator = operators[Math.floor(Math.random() * operators.length)];
 
         if (operator === "+") correctAnswer = num1 + num2;
         if (operator === "-") correctAnswer = num1 - num2;
@@ -111,6 +155,8 @@
 
         document.getElementById("answer").value = "";
         document.getElementById("feedback").innerHTML = "";
+
+        startTimer();
     }
 
     function checkAnswer() {
@@ -119,22 +165,27 @@
         if (userAns === correctAnswer) {
             document.getElementById("feedback").innerHTML = "✅ Correct!";
             score++;
+
+            document.getElementById("correctSound").play();
         } else {
             document.getElementById("feedback").innerHTML =
                 `❌ Wrong! Correct answer: ${correctAnswer}`;
+
+            document.getElementById("wrongSound").play();
         }
 
-        document.getElementById("score").innerHTML = `Score: ${score}`;
+        document.getElementById("score").innerHTML = "Score: " + score;
+
         generateQuestion();
     }
 
     function restartGame() {
+        clearInterval(timerInterval);
         score = 0;
         document.getElementById("score").innerHTML = "Score: 0";
         generateQuestion();
     }
 
-    // Start game
     generateQuestion();
 </script>
 
