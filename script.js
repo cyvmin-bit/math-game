@@ -1,89 +1,70 @@
-let num1, num2, operator, correctAnswer;
-let score = 0;
-let timeLeft = 30;
-let timerInterval;
-
-const answerInput = document.getElementById("answer");
-const feedback = document.getElementById("feedback");
-const scoreDisplay = document.getElementById("score");
-const restartBtn = document.getElementById("restart");
-const correctSound = document.getElementById("correctSound");
-const wrongSound = document.getElementById("wrongSound");
-
-function generateNumber(level) {
-    if (level === "easy") return Math.floor(Math.random() * 10) + 1;
-    if (level === "medium") return Math.floor(Math.random() * 20) + 1;
-    return Math.floor(Math.random() * 50) + 1;
+body {
+    font-family: "Poppins", sans-serif;
+    background: #f3f6fa;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
-function startTimer() {
-    clearInterval(timerInterval);
-    timeLeft = 30;
-    document.getElementById("timer").innerHTML = "Time: " + timeLeft;
-
-    timerInterval = setInterval(() => {
-        timeLeft--;
-        document.getElementById("timer").innerHTML = "Time: " + timeLeft;
-
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            feedback.innerHTML = "⏳ Time's up!";
-            generateQuestion();
-        }
-    }, 1000);
+.container {
+    text-align: center;
 }
 
-function generateQuestion() {
-    const level = document.getElementById("level").value;
-
-    num1 = generateNumber(level);
-    num2 = generateNumber(level);
-
-    let operators = ["+", "-", "×"];
-    operator = operators[Math.floor(Math.random() * operators.length)];
-
-    if (operator === "+") correctAnswer = num1 + num2;
-    if (operator === "-") correctAnswer = num1 - num2;
-    if (operator === "×") correctAnswer = num1 * num2;
-
-    document.getElementById("question").innerHTML = `${num1} ${operator} ${num2} = ?`;
-
-    answerInput.value = "";
-    feedback.innerHTML = "";
-
-    startTimer();
+h1 {
+    margin-bottom: 20px;
+    color: #333;
 }
 
-function checkAnswer() {
-    let userAns = Number(answerInput.value);
-
-    if (userAns === correctAnswer) {
-        feedback.innerHTML = "✅ Correct!";
-        score++;
-        correctSound.play();
-    } else {
-        feedback.innerHTML = `❌ Wrong! Correct answer: ${correctAnswer}`;
-        wrongSound.play();
-    }
-
-    scoreDisplay.innerHTML = "Score: " + score;
-    generateQuestion();
+.card {
+    background: white;
+    width: 330px;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0px 10px 25px rgba(0,0,0,0.08);
 }
 
-// Enter key submits answer
-answerInput.addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
-        checkAnswer();
-    }
-});
+.label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
 
-// Restart button
-restartBtn.addEventListener("click", function() {
-    clearInterval(timerInterval);
-    score = 0;
-    scoreDisplay.innerHTML = "Score: 0";
-    generateQuestion();
-});
+select, input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
 
-// Start the first question
-generateQuestion();
+.question {
+    margin-top: 20px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.score, .info {
+    margin-top: 15px;
+    font-size: 18px;
+    color: #555;
+}
+
+button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    background: #4a90e2;
+    border: none;
+    color: white;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #3a77c4;
+}
