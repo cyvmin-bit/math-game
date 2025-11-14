@@ -1,6 +1,6 @@
 let num1, num2, operator, correctAnswer;
 let score = 0;
-let timeLeft = 30; // Changed from 10 to 30
+let timeLeft = 10;
 let timerInterval;
 
 const answerInput = document.getElementById("answer");
@@ -18,7 +18,7 @@ function generateNumber(level) {
 
 function startTimer() {
     clearInterval(timerInterval);
-    timeLeft = 30; // Reset timer to 30 seconds
+    timeLeft = 10;
     document.getElementById("timer").innerHTML = "Time: " + timeLeft;
 
     timerInterval = setInterval(() => {
