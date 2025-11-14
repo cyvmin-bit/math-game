@@ -7,8 +7,6 @@ const answerInput = document.getElementById("answer");
 const feedback = document.getElementById("feedback");
 const scoreDisplay = document.getElementById("score");
 const restartBtn = document.getElementById("restart");
-const correctSound = document.getElementById("correctSound");
-const wrongSound = document.getElementById("wrongSound");
 
 function generateNumber(level) {
     if (level === "easy") return Math.floor(Math.random() * 10) + 1;
@@ -54,26 +52,22 @@ function generateQuestion() {
     startTimer();
 }
 
-function checkAnswer() {
-    let userAns = Number(answerInput.value);
-
-    if (userAns === correctAnswer) {
-        feedback.innerHTML = "✅ Correct!";
-        score++;
-        correctSound.play();
-    } else {
-        feedback.innerHTML = `❌ Wrong! Correct answer: ${correctAnswer}`;
-        wrongSound.play();
-    }
-
-    scoreDisplay.innerHTML = "Score: " + score;
-    generateQuestion();
-}
-
-// Trigger checkAnswer() when Enter is pressed
+// Check answer on Enter key
 answerInput.addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
-        checkAnswer();
+        let userAns = Number(answerInput.value);
+
+        if (userAns === correctAnswer) {
+            feedback.innerHTML = "✅ Correct!";
+            score++;
+            document.getElementById("correctSound").play();
+        } else {
+            feedback.innerHTML = `❌ Wrong! Correct answer: ${correctAnswer}`;
+            document.getElementById("wrongSound").play();
+        }
+
+        scoreDisplay.innerHTML = "Score: " + score;
+        generateQuestion();
     }
 });
 
