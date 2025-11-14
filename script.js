@@ -1,12 +1,7 @@
 let num1, num2, operator, correctAnswer;
 let score = 0;
-let timeLeft = 10;
+let timeLeft = 30;
 let timerInterval;
-
-const answerInput = document.getElementById("answer");
-const feedback = document.getElementById("feedback");
-const scoreDisplay = document.getElementById("score");
-const restartBtn = document.getElementById("restart");
 
 function generateNumber(level) {
     if (level === "easy") return Math.floor(Math.random() * 10) + 1;
@@ -25,7 +20,7 @@ function startTimer() {
 
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
-            feedback.innerHTML = "⏳ Time's up!";
+            document.getElementById("feedback").innerHTML = "⏳ Time's up!";
             generateQuestion();
         }
     }, 1000);
@@ -44,39 +39,38 @@ function generateQuestion() {
     if (operator === "-") correctAnswer = num1 - num2;
     if (operator === "×") correctAnswer = num1 * num2;
 
-    document.getElementById("question").innerHTML = `${num1} ${operator} ${num2} = ?`;
+    document.getElementById("question").innerHTML =
+        `${num1} ${operator} ${num2} = ?`;
 
-    answerInput.value = "";
-    feedback.innerHTML = "";
+    document.getElementById("answer").value = "";
+    document.getElementById("feedback").innerHTML = "";
 
     startTimer();
 }
 
-// Check answer on Enter key
-answerInput.addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
-        let userAns = Number(answerInput.value);
+function checkAnswer() {
+    let userAns = Number(document.getElementById("answer").value);
 
-        if (userAns === correctAnswer) {
-            feedback.innerHTML = "✅ Correct!";
-            score++;
-            document.getElementById("correctSound").play();
-        } else {
-            feedback.innerHTML = `❌ Wrong! Correct answer: ${correctAnswer}`;
-            document.getElementById("wrongSound").play();
-        }
-
-        scoreDisplay.innerHTML = "Score: " + score;
-        generateQuestion();
+    if (userAns === correctAnswer) {
+        document.getElementById("feedback").innerHTML = "✅ Correct!";
+        score++;
+        document.getElementById("correctSound").play();
+    } else {
+        document.getElementById("feedback").innerHTML =
+            `❌ Wrong! Correct answer: ${correctAnswer}`;
+        document.getElementById("wrongSound").play();
     }
-});
 
-// Restart game
-restartBtn.addEventListener("click", function() {
+    document.getElementById("score").innerHTML = "Score: " + score;
+    generateQuestion();
+}
+
+function restartGame() {
     clearInterval(timerInterval);
     score = 0;
-    scoreDisplay.innerHTML = "Score: 0";
+    document.getElementById("score").innerHTML = "Score: 0";
     generateQuestion();
-});
+}
 
+// Start first question when page loads
 generateQuestion();
